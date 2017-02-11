@@ -1,0 +1,550 @@
+/*******************************************************************************************
+  SIMPL+ Module Information
+  (Fill in comments below)
+*******************************************************************************************/
+/*
+Dealer Name:
+System Name:
+System Number:
+Programmer:
+Comments:
+*/
+
+/*******************************************************************************************
+  Compiler Directives
+  (Uncomment and declare compiler directives as needed)
+*******************************************************************************************/
+// #ENABLE_DYNAMIC
+#SYMBOL_NAME "FTP Client v1.0"
+// #HINT ""
+// #DEFINE_CONSTANT
+#DEFINE_CONSTANT MAX_PARSING_SIZE		255
+#DEFINE_CONSTANT MAX_FILE_SIZE			65534
+#DEFINE_CONSTANT MAX_FILENAME_LENGHT	50
+// #CATEGORY "" 
+// #PRINT_TO_TRACE
+// #DIGITAL_EXPAND 
+// #ANALOG_SERIAL_EXPAND 
+// #OUTPUT_SHIFT 
+// #HELP_PDF_FILE ""
+#DEFAULT_VOLATILE
+#ENABLE_STACK_CHECKING
+#ENABLE_TRACE
+// #ENCODING_ASCII
+// #ENCODING_UTF16
+// #ENCODING_INHERIT_FROM_PARENT
+// #ENCODING_INHERIT_FROM_PROGRAM
+
+#HELP_BEGIN
+
+   Module who connect to an ftp server to download a file to the processor. and read it to extract the dossier #.
+
+used for Ville de Laval Court Room.
+
+the module will create the folder if it's not already created.
+
+#HELP_END
+
+/*******************************************************************************************
+  Include Libraries
+  (Uncomment and include additional libraries as needed)
+*******************************************************************************************/
+// #CRESTRON_LIBRARY ""
+// #USER_LIBRARY ""
+//#USER_SIMPLSHARP_LIBRARY "FTP_Test"
+#USER_SIMPLSHARP_LIBRARY "LavalFTP"
+
+//#INCLUDEPATH "D:\Users\raphael.thiffault\Documents\Visual Studio 2008\Projects\FTP_Test\FTP_Test\bin"
+/*******************************************************************************************
+  DIGITAL, ANALOG and SERIAL INPUTS and OUTPUTS
+  (Uncomment and declare inputs and outputs as needed)
+*******************************************************************************************/
+DIGITAL_INPUT _skip_,_skip_,_skip_,_skip_,_skip_,_skip_,_skip_,_skip_,debug;
+DIGITAL_INPUT _skip_,get, send;
+// ANALOG_INPUT 
+STRING_INPUT _skip_,Host[255],Port[5],User[255],Pass[255],Folder[255],Filename[255];
+string_input _skip_,Path[255];
+digital_input _skip_, readonly;// BUFFER_INPUT 
+
+DIGITAL_OUTPUT _skip_,_skip_,_skip_,_skip_,_skip_,_skip_,_skip_,_skip_,Read_Error,Read_Ok;
+DIGITAL_OUTPUT _skip_,INITIALIZE_CONFIGURATION,FTP_ReadOk,FTP_ReadError;
+// ANALOG_OUTPUT 
+STRING_OUTPUT _skip_,Host_fb,Port_fb,User_fb,Pass_fb,Folder_fb,Filename_fb;
+STRING_OUTPUT _skip_,Dossier,_skip_,msg;
+
+FTP myFTP;
+/*******************************************************************************************
+  SOCKETS
+  (Uncomment and define socket definitions as needed)
+*******************************************************************************************/
+// TCP_CLIENT
+// TCP_SERVER
+// UDP_SOCKET
+
+/*******************************************************************************************
+  Parameters
+  (Uncomment and declare parameters as needed)
+*******************************************************************************************/
+//INTEGER_PARAMETER
+// SIGNED_INTEGER_PARAMETER
+// LONG_INTEGER_PARAMETER
+// SIGNED_LONG_INTEGER_PARAMETER
+STRING_PARAMETER FTP_Host[255];
+INTEGER_PARAMETER FTP_Port;
+STRING_PARAMETER FTP_User[255],FTP_Pass[255],FTP_Folder[255],FTP_Filename[255];
+STRING_PARAMETER Local_Path[255];
+/*******************************************************************************************
+  Parameter Properties
+  (Uncomment and declare parameter properties as needed)
+*******************************************************************************************/
+ /*
+#BEGIN_PARAMETER_PROPERTIES parameter_variable, parameter_variable, ...
+   // propValidUnits = // unitString or unitDecimal|unitHex|unitPercent|unitCharacter|unitTime|unitTicks;
+   // propDefaultUnit = // unitString, unitDecimal, unitHex, unitPercent, unitCharacter, unitTime or unitTicks;
+   // propBounds = lower_bound , upper_bound;
+   // propDefaultValue = ;  // or, propDefaultValue = "";
+   // propList = // { "value" , "label" } , { "value" , "label" } , ... ;
+   // propShortDescription = "status_bar_hint_text";
+   // #BEGIN_PROP_FULL_DESCRIPTION  line_1...  line_2...  line_n  #END_PROP_FULL_DESCRIPTION
+   // #BEGIN_PROP_NOTES line_1...  line_2...  line_n  #END_PROP_NOTES
+#END_PARAMETER_PROPERTIES
+*/
+
+#BEGIN_PARAMETER_PROPERTIES FTP_Host
+   propValidUnits = unitString;
+   propDefaultUnit = unitString;
+   //propBounds = 1d , 65534d;
+   propDefaultValue = "127.0.0.1";  // or, propDefaultValue = "";
+   // propList = // { "value" , "label" } , { "value" , "label" } , ... ;
+   // propShortDescription = "status_bar_hint_text";
+   // #BEGIN_PROP_FULL_DESCRIPTION  line_1...  line_2...  line_n  #END_PROP_FULL_DESCRIPTION
+   // #BEGIN_PROP_NOTES line_1...  line_2...  line_n  #END_PROP_NOTES
+#END_PARAMETER_PROPERTIES
+
+
+#BEGIN_PARAMETER_PROPERTIES FTP_Port
+   propValidUnits = unitDecimal;
+   propDefaultUnit = unitDecimal;
+   propBounds = 1d , 65534d;
+   propDefaultValue = 21d;  // or, propDefaultValue = "";
+   // propList = // { "value" , "label" } , { "value" , "label" } , ... ;
+   // propShortDescription = "status_bar_hint_text";
+   // #BEGIN_PROP_FULL_DESCRIPTION  line_1...  line_2...  line_n  #END_PROP_FULL_DESCRIPTION
+   // #BEGIN_PROP_NOTES line_1...  line_2...  line_n  #END_PROP_NOTES
+#END_PARAMETER_PROPERTIES
+
+#BEGIN_PARAMETER_PROPERTIES FTP_User
+   propValidUnits = unitString;
+   propDefaultUnit = unitString;
+   //propBounds = 1d , 65534d;
+   propDefaultValue = "Anonymous";  // or, propDefaultValue = "";
+   // propList = // { "value" , "label" } , { "value" , "label" } , ... ;
+   // propShortDescription = "status_bar_hint_text";
+   // #BEGIN_PROP_FULL_DESCRIPTION  line_1...  line_2...  line_n  #END_PROP_FULL_DESCRIPTION
+   // #BEGIN_PROP_NOTES line_1...  line_2...  line_n  #END_PROP_NOTES
+#END_PARAMETER_PROPERTIES
+
+#BEGIN_PARAMETER_PROPERTIES FTP_Pass
+   propValidUnits = unitString;
+   propDefaultUnit = unitString;
+   //propBounds = 1d , 65534d;
+   propDefaultValue = "\x22\x22";  // or, propDefaultValue = "";
+   // propList = // { "value" , "label" } , { "value" , "label" } , ... ;
+   // propShortDescription = "status_bar_hint_text";
+   // #BEGIN_PROP_FULL_DESCRIPTION  line_1...  line_2...  line_n  #END_PROP_FULL_DESCRIPTION
+   // #BEGIN_PROP_NOTES line_1...  line_2...  line_n  #END_PROP_NOTES
+#END_PARAMETER_PROPERTIES
+
+#BEGIN_PARAMETER_PROPERTIES FTP_Folder
+   propValidUnits = unitString;
+   propDefaultUnit = unitString;
+   //propBounds = 1d , 65534d;
+   propDefaultValue = "";  // or, propDefaultValue = "";
+   // propList = // { "value" , "label" } , { "value" , "label" } , ... ;
+   // propShortDescription = "status_bar_hint_text";
+   // #BEGIN_PROP_FULL_DESCRIPTION  line_1...  line_2...  line_n  #END_PROP_FULL_DESCRIPTION
+   // #BEGIN_PROP_NOTES line_1...  line_2...  line_n  #END_PROP_NOTES
+#END_PARAMETER_PROPERTIES
+
+#BEGIN_PARAMETER_PROPERTIES FTP_Filename
+   propValidUnits = unitString;
+   propDefaultUnit = unitString;
+   //propBounds = 1d , 65534d;
+   propDefaultValue = "Sample.txt";  // or, propDefaultValue = "";
+   // propList = // { "value" , "label" } , { "value" , "label" } , ... ;
+   // propShortDescription = "status_bar_hint_text";
+   // #BEGIN_PROP_FULL_DESCRIPTION  line_1...  line_2...  line_n  #END_PROP_FULL_DESCRIPTION
+   // #BEGIN_PROP_NOTES line_1...  line_2...  line_n  #END_PROP_NOTES
+#END_PARAMETER_PROPERTIES
+
+#BEGIN_PARAMETER_PROPERTIES Local_Path
+   propValidUnits = unitString;
+   propDefaultUnit = unitString;
+   //propBounds = 1d , 65534d;
+   propDefaultValue = "\\NVRAM";  // or, propDefaultValue = "";
+   // propList = // { "value" , "label" } , { "value" , "label" } , ... ;
+   // propShortDescription = "status_bar_hint_text";
+   // #BEGIN_PROP_FULL_DESCRIPTION  line_1...  line_2...  line_n  #END_PROP_FULL_DESCRIPTION
+   // #BEGIN_PROP_NOTES line_1...  line_2...  line_n  #END_PROP_NOTES
+#END_PARAMETER_PROPERTIES
+
+/*******************************************************************************************
+  Structure Definitions
+  (Uncomment and define structure definitions as needed)
+  Note:  Be sure to initialize all declared STRING variables as needed
+         For example, in Function Main: struct.myString = "";
+*******************************************************************************************/
+/*
+STRUCTURE MyStruct1
+{
+};
+
+MyStruct1 struct;
+*/
+
+/*******************************************************************************************
+  Global Variables
+  (Uncomment and declare global variables as needed)
+  Note:  Be sure to initialize all declared STRING variables as needed
+         For example, in Function Main: myString = "";
+*******************************************************************************************/
+// INTEGER
+// LONG_INTEGER
+// SIGNED_INTEGER
+// SIGNED_LONG_INTEGER
+// STRING 
+STRING gsProgramTag[25],gsFilepath[MAX_FILENAME_LENGHT];
+
+nonvolatile STRING sHost[255],sPort[5],sUser[255],sPass[255],sFolder[255],sFilename[255];
+
+/*******************************************************************************************
+  Functions
+  (Add any additional functions here)
+  Note:  Functions must be physically placed before the location in
+         the code that calls them.
+*******************************************************************************************/
+String_Function fGetProgramTag()							// Returns the Program Tag for the program running this module
+{
+    string sResult[100], sProgramName[50];
+	integer iPos1, iPos2;
+
+	sProgramName = "\\Simpl\\App01\\MyProgram";   			// Generate value to feed into the MakeProgramFilename function 
+    
+	if(debug) {TRACE("sProgramName: %s\n", sProgramName);}
+
+	sResult = MakeProgramFilename(sProgramName);			// Generate the filename prepended by the Program Tag
+    if(debug) {TRACE("sResult: %s\n", sResult);}
+
+	iPos2 = find("\\MyProgram", sResult);						// Find the first underscore from the end of the filename
+    iPos1 = reversefind("\\", sResult, iPos2 - 1);				// Find the first "\" in front of the Program Tag
+	sResult = mid(sResult, iPos1 + 1, iPos2 - iPos1 - 1);	// Parse out the Program Tag
+	
+	if(debug) {TRACE("Last \\ found at: %d\n", iPos1);}
+	if(debug) {TRACE("MyProgram found at: %d\n", iPos2);}
+
+	if(debug) {TRACE("Program Tag: %s\n", sResult);}
+	
+    Return (sResult);
+}
+
+Function Init()						// Register EventHandlers
+{	
+	RegisterEvent (myFTP, StringChange, StringChanged);
+}
+
+Function fnXMLParsing(string msg)
+{
+ 	string sdump[MAX_PARSING_SIZE];
+	integer nstart,nstop;
+
+	while(find("</nom-fichier>",msg)>0)
+	{
+		trace("Find </nom-fichier> at %d:%d",find("</Entry>",msg),len(msg));
+		sdump = remove("</nom-fichier>",msg);
+		nstart = find("<nom-fichier>",sdump);
+		nstop = find("</nom-fichier>",sdump);
+		sdump = mid(sdump,nstart+len("<nom-fichier>"),nstop-(nstart+len("<nom-fichier>")));
+		trace("- %s",sdump);
+		Dossier = sdump;
+	}
+	Initialize_configuration = 0;
+}
+
+function ReadFile()
+{  
+ 	integer lenght;
+ 	
+ 	STRING  SReadBuf[MAX_FILE_SIZE];
+ 	 	
+ 	SIGNED_INTEGER  nFileHandle;
+
+	if (StartFileOperations() < 0)
+    {    
+        pulse(50, Read_ERROR);
+		trace( "Error in starting file ops" );
+    } 
+	gsfilepath = Path + "\\" +sFileName;
+    
+    nFileHandle = FileOpen(gsFilePath, _O_RDONLY | _O_TEXT);
+    
+    if (nFileHandle < 0)
+    {        
+        pulse(50, Read_ERROR);
+        EndFileOperations();
+    }
+    
+    FILEREAD(nFileHandle,SReadBuf,MAX_FILE_SIZE);
+	LENGHT = len(SReadBuf);
+     
+    FILECLOSE(nFileHandle);
+    
+    IF (ENDFILEOPERATIONS() < 0)
+    {
+		trace( "Error Occurred in ending file ops" );
+	}
+    ELSE
+	{
+		Read_Ok = 1;
+		trace("Readed File lenght: %d",len(SReadBuf));
+		if(find("</Sauvegarder>",SReadBuf))
+		{
+			//Initialize parsing process
+			Initialize_configuration=1;
+
+			//Initialize variable for different array
+			trace("Find </Sauvegarder> Delimiter");
+
+			fnXMLParsing(sReadBuf);
+		}
+	}  
+}
+/*
+Function MyFunction1()
+{
+    // TODO:  Add local variable declarations here
+
+    // TODO:  Add code here
+}
+*/
+
+/*
+Integer_Function MyIntFunction1()
+{
+    // TODO:  Add local variable declarations here
+
+    // TODO:  Add code here
+
+    Return (0);
+}
+*/
+
+
+String_Function MyStrFunction1(string s1, string s2)
+{
+	if(len(s1)>0)
+	{
+		s2=s1;
+	}
+	else s2="";
+
+    Return (s2);
+}
+
+
+/*******************************************************************************************
+  Event Handlers
+  (Uncomment and declare additional event handlers as needed)
+*******************************************************************************************/
+eventhandler StringChanged(FTP sender, StringChangeEventArgs args)		// Receives Ushort values from S#
+{
+	TRACE("FTP value: %s",args.SValue);
+	msg = args.SValue;
+	if(args.SValue = "Get File Ok")
+	{
+		FTP_ReadOk=1;
+       ReadFile();
+	}
+	else if (args.SValue = "Get File Error")
+	{
+		pulse(50, FTP_ReadError);
+		Initialize_configuration=0;
+		Dossier = "----";
+	
+	}
+}
+
+push debug
+{
+	myFTP.debug = 1;
+}
+release debug
+{
+	myFTP.debug = 0;
+}
+push readonly
+{
+	ReadFile();
+}
+
+PUSH get
+{
+	Initialize_configuration=1;
+	FTP_ReadOk=0;
+	Read_Ok=0;
+	gsFilePath = Path + "\\" + gsProgramTag + "\\" +sFileName;	// \\NVRAM\Laval_Court\*.xml
+	myFTP.host = shost;
+	myFTP.port = sport;
+	myFTP.user = suser;
+	myFTP.pass = spass;
+	myFTP.filePath = Path + "\\" + gsProgramTag;	// \\NVRAM\Laval_Court
+	myFTP.filename = sfilename;						// Preuve.xml
+	myFTP.folder = sfolder;
+	myFTP.GetFile();
+	trace("REading FilePAth: %s",gsfilepath);
+
+}
+
+push send
+{
+	gsFilePath = Path + "\\" + gsProgramTag + "\\" +FileName;
+    myFTP.host = host;
+	myFTP.port = port;
+	myFTP.user = user;
+	myFTP.pass = pass;
+	myFTP.filePath = Path + "\\" + gsProgramTag;
+	myFTP.filename = filename;
+	myFTP.folder = folder;
+	myFTP.PutFile();
+	trace("REading FilePAth: %s",gsfilepath);
+}
+/*
+push info
+{
+	myFTP.info();
+}
+
+push GetSFTP
+{
+    myFTP.host = host;
+	myFTP.port = port;
+	myFTP.user = user;
+	myFTP.pass = pass;
+	myFTP.filePath = path;
+	myFTP.filename = filename;
+	myFTP.folder = folder;
+	myFTP.GetSFile();
+}
+*/
+/*
+RELEASE input
+{
+    // TODO:  Add code here
+}
+*/
+
+
+CHANGE host
+{
+		host_fb = MyStrFunction1(host,shost);
+}
+
+CHANGE user
+{
+		user_fb = MyStrFunction1(user,suser);
+}
+
+CHANGE pass
+{
+		pass_fb = MyStrFunction1(pass,spass);
+}
+change folder
+{
+		folder_fb = MyStrFunction1(folder,sfolder);
+}
+change filename
+{
+		filename_fb = MyStrFunction1(filename,sfilename);
+}
+
+/*
+EVENT
+{
+    // TODO:  Add code here
+}
+*/
+
+/*
+SOCKETCONNECT
+{
+    // TODO:  Add code here
+}
+*/
+
+/*
+SOCKETDISCONNECT
+{
+    // TODO:  Add code here
+}
+*/
+
+/*
+SOCKETRECEIVE
+{
+    // TODO:  Add code here
+}
+*/
+
+/*
+SOCKETSTATUS
+{
+    // TODO:  Add code here
+}
+*/
+     // do something
+
+ 
+/*******************************************************************************************
+  Main()
+  Uncomment and place one-time startup code here
+  (This code will get called when the system starts up)
+*******************************************************************************************/
+
+Function Main()
+{
+    // TODO:  Add code here
+    // Initialize declared global and local variables/arrays as needed.
+
+    WaitForInitializationComplete();
+    
+
+	Init();
+	gsProgramTag = fGetPRogramTag();
+
+	myFTP.info();
+	if(shost="") shost=FTP_Host;
+	if(sPort="") sport=itoa(FTP_Port);
+	if(sUser="") suser=FTP_User;
+	if(sPass="") spass=FTP_Pass;
+	if(sFolder="") sFolder=FTP_Folder;
+	if(sFilename="") sfilename=FTP_Filename;
+	if(Path="") Path=Local_Path;
+	gsFilePath = Path + "\\" + gsProgramTag + "\\" +sFileName;
+	trace("REading FilePAth: %s",gsfilepath);
+    host_fb = shost;
+	port_fb = sport;
+	user_fb = suser;
+	pass_fb = spass;
+	folder_fb = sfolder;
+	filename_fb = sfilename;
+	Dossier = "----";
+	FTP_ReadOk=0;
+	Read_Ok=0;
+
+    // If you are reading any Input or Output variables, uncomment
+    //   the WaitForInitializationComplete statement above and read
+    //   them afterwards.  Input/Output variables will not have
+    //   their correct values set until after the logic processor
+    //   runs and propagates the values to them.
+}
+
+
