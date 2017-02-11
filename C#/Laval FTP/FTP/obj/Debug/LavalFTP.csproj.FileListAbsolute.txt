@@ -1,0 +1,14 @@
+D:\Users\raphael.thiffault\Documents\Visual Studio 2008\Projects\FTP_Test\FTP_Test\bin\LavalFTP.dll
+D:\Users\raphael.thiffault\Documents\Visual Studio 2008\Projects\FTP_Test\FTP_Test\bin\LavalFTP.pdb
+D:\Users\raphael.thiffault\Documents\Visual Studio 2008\Projects\FTP_Test\FTP_Test\bin\SimplSharpCustomAttributesInterface.dll
+D:\Users\raphael.thiffault\Documents\Visual Studio 2008\Projects\FTP_Test\FTP_Test\bin\SimplSharpHelperInterface.dll
+D:\Users\raphael.thiffault\Documents\Visual Studio 2008\Projects\FTP_Test\FTP_Test\obj\Debug\ResolveAssemblyReference.cache
+D:\Users\raphael.thiffault\Documents\Visual Studio 2008\Projects\FTP_Test\FTP_Test\obj\Debug\LavalFTP.dll
+D:\Users\raphael.thiffault\Documents\Visual Studio 2008\Projects\FTP_Test\FTP_Test\obj\Debug\LavalFTP.pdb
+D:\!Projet\laval-courtroom\C#\FTP_Test\FTP_Test\bin\LavalFTP.dll
+D:\!Projet\laval-courtroom\C#\FTP_Test\FTP_Test\bin\LavalFTP.pdb
+D:\!Projet\laval-courtroom\C#\FTP_Test\FTP_Test\bin\SimplSharpCustomAttributesInterface.dll
+D:\!Projet\laval-courtroom\C#\FTP_Test\FTP_Test\bin\SimplSharpHelperInterface.dll
+D:\!Projet\laval-courtroom\C#\FTP_Test\FTP_Test\obj\Debug\ResolveAssemblyReference.cache
+D:\!Projet\laval-courtroom\C#\FTP_Test\FTP_Test\obj\Debug\LavalFTP.dll
+D:\!Projet\laval-courtroom\C#\FTP_Test\FTP_Test\obj\Debug\LavalFTP.pdb

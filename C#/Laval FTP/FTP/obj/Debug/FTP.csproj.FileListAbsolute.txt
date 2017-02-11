@@ -1,0 +1,7 @@
+d:\Users\raphael.thiffault\Documents\Visual Studio 2008\Projects\FTP_Test\FTP_Test\bin\FTP.dll
+d:\Users\raphael.thiffault\Documents\Visual Studio 2008\Projects\FTP_Test\FTP_Test\bin\FTP.pdb
+d:\Users\raphael.thiffault\Documents\Visual Studio 2008\Projects\FTP_Test\FTP_Test\bin\SimplSharpCustomAttributesInterface.dll
+d:\Users\raphael.thiffault\Documents\Visual Studio 2008\Projects\FTP_Test\FTP_Test\bin\SimplSharpHelperInterface.dll
+d:\Users\raphael.thiffault\Documents\Visual Studio 2008\Projects\FTP_Test\FTP_Test\obj\Debug\ResolveAssemblyReference.cache
+d:\Users\raphael.thiffault\Documents\Visual Studio 2008\Projects\FTP_Test\FTP_Test\obj\Debug\FTP.dll
+d:\Users\raphael.thiffault\Documents\Visual Studio 2008\Projects\FTP_Test\FTP_Test\obj\Debug\FTP.pdb
